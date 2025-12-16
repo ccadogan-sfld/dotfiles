@@ -1,0 +1,8 @@
+# Zsh environment: exports and PATH that should be safe/fast; avoid aliases, setopt, and tool init.
+
+# Prefer Neovim as the default editor so CLI tools respect it.
+export EDITOR="nvim"
+export VISUAL="$EDITOR"
+
+# Add a personal bin directory early on the PATH.
+export PATH="$HOME/bin:$PATH"

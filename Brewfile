@@ -1,0 +1,6 @@
+brew "git"
+brew "htop"
+brew "neovim"
+brew "starship"
+brew "stow"
+brew "tmux"

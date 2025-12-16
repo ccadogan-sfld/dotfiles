@@ -1,0 +1,10 @@
+[user]
+	email = conor.cadogan@gmail.com
+	name = Conor
+[alias]
+    st = status
+    ci = commit
+    br = branch
+    co = checkout
+[init]
+	defaultBranch = main
