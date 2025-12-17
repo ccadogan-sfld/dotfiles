@@ -19,6 +19,7 @@ backup_path() {
 }
 
 dotfiles_realpath() {
+  # Resolve a path to its real (dereferenced) location when possible.
   local path="$1"
   if command -v python3 >/dev/null 2>&1; then
     python3 -c 'import os,sys; print(os.path.realpath(sys.argv[1]))' "$path"
@@ -44,9 +45,35 @@ maybe_backup_conflict() {
   fi
 }
 
+# Ensure a directory exists; if a non-directory exists at the path (including a dangling symlink),
+# move it aside before creating the directory.
+ensure_directory() {
+  local dir="$1"
+
+  if [ -d "$dir" ]; then
+    return 0
+  fi
+
+  if [ -e "$dir" ] || [ -L "$dir" ]; then
+    backup_path "$dir"
+  fi
+
+  mkdir -p "$dir"
+}
+
 # Stow all packages under ./config into $HOME, backing up any conflicting existing files first.
 stow_all() {
-  if [ ! -d config ] || [ -z "$(find config -mindepth 1 -print -quit 2>/dev/null)" ]; then
+  local roots=(config)
+  local any_dotfiles=0
+  local root
+  for root in "${roots[@]}"; do
+    if [ -d "$root" ] && [ -n "$(find "$root" -mindepth 1 -print -quit 2>/dev/null)" ]; then
+      any_dotfiles=1
+      break
+    fi
+  done
+
+  if [ "$any_dotfiles" -eq 0 ]; then
     echo "No dotfiles found under config/; skipping stow."
     return 0
   fi
@@ -56,63 +83,92 @@ stow_all() {
     return 0
   fi
 
-  # Migration: earlier layout incorrectly stowed `.config/*` into `$HOME/*` (e.g. `$HOME/shells`).
-  local legacy
-  for legacy in git nvim shells starship tmux vim; do
-    local legacy_path="$HOME/$legacy"
-    if [ -L "$legacy_path" ]; then
-      local legacy_target
-      legacy_target="$(readlink "$legacy_path" 2>/dev/null || true)"
-      if [[ "$legacy_target" == *"/config/.config/$legacy" ]]; then
-        echo "Removing legacy symlink $legacy_path -> $legacy_target"
-        rm "$legacy_path"
-      fi
-    fi
-  done
+  ensure_directory "$HOME/.config"
 
   local dotfiles_root
   dotfiles_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
 
-  local stow_packages=()
-  local pkg
-  local pkg_base
-  shopt -s dotglob nullglob
-  for pkg in config/*; do
-    [ -d "$pkg" ] || continue
-    pkg_base="$(basename "$pkg")"
-    [ "$pkg_base" = ".config" ] && continue
-    stow_packages+=("$pkg_base")
-  done
-  shopt -u dotglob nullglob
+  stow_root() {
+    local root="$1"
 
-  if [ ${#stow_packages[@]} -eq 0 ]; then
-    echo "No stow packages found under config/; nothing to link."
-    return 0
-  fi
-
-  # Backup conflicts at the directory/file level we intend to link, to allow directory symlinks.
-  for pkg in "${stow_packages[@]}"; do
-    if [ "$pkg" = "xdg" ]; then
-      local name
-      shopt -s dotglob nullglob
-      for entry in config/xdg/.config/*; do
-        [ -e "$entry" ] || continue
-        name="$(basename "$entry")"
-        maybe_backup_conflict "$HOME/.config/$name" "$dotfiles_root/config/xdg/.config/$name"
-      done
-      shopt -u dotglob nullglob
-      continue
+    if [ ! -d "$root" ] || [ -z "$(find "$root" -mindepth 1 -print -quit 2>/dev/null)" ]; then
+      return 0
     fi
 
-    local name
+    local stow_packages=()
+    local pkg
+    local pkg_base
     shopt -s dotglob nullglob
-    for entry in "config/$pkg"/*; do
-      [ -e "$entry" ] || continue
-      name="$(basename "$entry")"
-      maybe_backup_conflict "$HOME/$name" "$dotfiles_root/config/$pkg/$name"
+    for pkg in "$root"/*; do
+      [ -d "$pkg" ] || continue
+      pkg_base="$(basename "$pkg")"
+      [ "$pkg_base" = ".config" ] && continue
+      stow_packages+=("$pkg_base")
     done
     shopt -u dotglob nullglob
-  done
 
-  stow -d config -t "$HOME" "${stow_packages[@]}"
+    if [ ${#stow_packages[@]} -eq 0 ]; then
+      echo "No stow packages found under $root/; nothing to link."
+      return 0
+    fi
+
+    # Backup conflicts at the directory/file level we intend to link, to allow directory symlinks.
+    local pkg_name
+    for pkg_name in "${stow_packages[@]}"; do
+      if [ "$root" = "config" ] && [ "$pkg_name" = "shells" ]; then
+        local shells_target="$HOME/.config/shells"
+        ensure_directory "$shells_target"
+
+        local entry
+        local name
+        shopt -s dotglob nullglob
+        for entry in "$root/$pkg_name"/*; do
+          [ -e "$entry" ] || continue
+          name="$(basename "$entry")"
+          maybe_backup_conflict "$shells_target/$name" "$dotfiles_root/$root/$pkg_name/$name"
+        done
+        shopt -u dotglob nullglob
+        continue
+      fi
+
+      local name
+      shopt -s dotglob nullglob
+      for entry in "$root/$pkg_name"/*; do
+        [ -e "$entry" ] || continue
+        name="$(basename "$entry")"
+
+        if [ "$name" = ".config" ] && [ -d "$entry" ]; then
+          local xdg_name
+          for xdg_entry in "$entry"/*; do
+            [ -e "$xdg_entry" ] || continue
+            xdg_name="$(basename "$xdg_entry")"
+            maybe_backup_conflict "$HOME/.config/$xdg_name" "$dotfiles_root/$root/$pkg_name/.config/$xdg_name"
+          done
+          continue
+        fi
+
+        maybe_backup_conflict "$HOME/$name" "$dotfiles_root/$root/$pkg_name/$name"
+      done
+      shopt -u dotglob nullglob
+    done
+
+    local final_packages=()
+    local pkg
+    for pkg in "${stow_packages[@]}"; do
+      if [ "$root" = "config" ] && [ "$pkg" = "shells" ]; then
+        ensure_directory "$HOME/.config/shells"
+        stow -d "$root" -t "$HOME/.config/shells" shells
+      else
+        final_packages+=("$pkg")
+      fi
+    done
+
+    if [ ${#final_packages[@]} -gt 0 ]; then
+      stow -d "$root" -t "$HOME" "${final_packages[@]}"
+    fi
+  }
+
+  for root in "${roots[@]}"; do
+    stow_root "$root"
+  done
 }

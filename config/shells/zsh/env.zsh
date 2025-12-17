@@ -6,3 +6,8 @@ export VISUAL="$EDITOR"
 
 # Add a personal bin directory early on the PATH.
 export PATH="$HOME/bin:$PATH"
+
+# Ensure starship uses the config installed by these dotfiles.
+if [ -z "${STARSHIP_CONFIG:-}" ]; then
+  export STARSHIP_CONFIG="$HOME/.config/starship.toml"
+fi
