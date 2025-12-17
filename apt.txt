@@ -1,5 +1,10 @@
+fd-find
+fzf
 git
 htop
+lazygit
 neovim
+ripgrep
 stow
 tmux
+tree-sitter-cli

@@ -7,8 +7,8 @@ install_starship() {
 }
 
 install_uv() {
-    command -v uv >/dev/null && return
-    curl -LsSf https://astral.sh/uv/install.sh | sh
+  command -v uv >/dev/null && return
+  curl -LsSf https://astral.sh/uv/install.sh | sh
 }
 
 install_starship

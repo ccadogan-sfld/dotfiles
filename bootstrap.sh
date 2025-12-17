@@ -30,11 +30,14 @@ else
   exit 1
 fi
 
+bash ./scripts/bootstrap/lazyvim-requirements.sh
+
 stow_all
 
 ./scripts/bootstrap/shell-config.sh --shell auto
 
 
-./scripts/curl-installs.sh
+bash ./scripts/curl-installs.sh
+bash ./scripts/install-fonts.sh
 
 echo "Bootstrap complete! Restart your terminal to apply changes."
