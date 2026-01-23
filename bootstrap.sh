@@ -22,9 +22,21 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 elif command -v apt >/dev/null; then
   xargs -a apt.txt sudo apt install -y
 elif command -v yum >/dev/null; then
-  xargs -a apt.txt sudo yum install -y
+  sudo yum install -y yum-plugin-copr
+  # Enable COPR for packages like lazygit.
+  sudo yum copr enable -y atim/lazygit
+  grep -v '^tree-sitter-cli$' apt.txt | xargs sudo yum install -y
+  # tree-sitter-cli is published via npm for yum/dnf.
+  sudo yum install -y nodejs npm
+  sudo npm install -g tree-sitter-cli
 elif command -v dnf >/dev/null; then
-  xargs -a apt.txt sudo dnf install -y
+  sudo dnf install -y dnf-plugins-core
+  # Enable COPR for packages like lazygit.
+  sudo dnf copr enable -y atim/lazygit
+  grep -v '^tree-sitter-cli$' apt.txt | xargs sudo dnf install -y
+  # tree-sitter-cli is published via npm for yum/dnf.
+  sudo dnf install -y nodejs npm
+  sudo npm install -g tree-sitter-cli
 else
   echo "Unsupported OS"
   exit 1
@@ -35,6 +47,7 @@ bash ./scripts/bootstrap/lazyvim-requirements.sh
 stow_all
 
 ./scripts/bootstrap/shell-config.sh --shell auto
+./scripts/bootstrap/default-shell.sh --shell zsh
 
 
 bash ./scripts/curl-installs.sh
