@@ -7,6 +7,7 @@ install_lazyvim() {
     echo "Installing LazyVim requirements..."
     nvim --headless -c '+Lazy! sync' +qa 2>/dev/null || true
   fi
+}
 
 warn_if_missing() {
   local missing=0
