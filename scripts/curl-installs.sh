@@ -32,5 +32,6 @@ install_uv() {
   curl -LsSf https://astral.sh/uv/install.sh | sh
 }
 
+install_nvim
 install_starship
 install_uv
