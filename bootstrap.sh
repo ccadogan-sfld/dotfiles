@@ -47,7 +47,6 @@ bash ./scripts/bootstrap/lazyvim-requirements.sh
 stow_all
 
 ./scripts/bootstrap/shell-config.sh --shell auto
-./scripts/bootstrap/default-shell.sh --shell zsh
 
 
 bash ./scripts/curl-installs.sh
