@@ -52,4 +52,6 @@ stow_all
 bash ./scripts/curl-installs.sh
 bash ./scripts/install-fonts.sh
 
+bash ./scripts/bootstrap/git-config.sh
+
 echo "Bootstrap complete! Restart your terminal to apply changes."
