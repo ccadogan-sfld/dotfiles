@@ -18,7 +18,7 @@ install_nvim() {
 
     curl -Lo /tmp/$TAR_BALL https://github.com/neovim/neovim/releases/download/stable/$TAR_BALL
     tar -xzf /tmp/$TAR_BALL -C /tmp/
-    sudo mv /tmp/${TAR_BALL%.tar.gz}/* /usr/local/
+    sudo cp -rf /tmp/${TAR_BALL%.tar.gz}/* /usr/local/
     rm -rf /tmp/${TAR_BALL%.tar.gz} /tmp/$TAR_BALL
 }
 
