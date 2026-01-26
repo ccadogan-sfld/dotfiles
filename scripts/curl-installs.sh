@@ -46,7 +46,9 @@ install_k9s() {
     
     
     TAR_BALL="k9s_${K9S_OS}_${K9S_ARCH}.tar.gz"
-    wget https://github.com/derailed/k9s/releases/download/latest/$TAR_BALL -O /tmp/$TAR_BALL
+    K9S_VERSION=v0.50.18
+
+    curl -Lo /tmp/$TAR_BALL https://github.com/derailed/k9s/releases/download/$K9S_VERSION/$TAR_BALL
     
     tar -xzf /tmp/$TAR_BALL -C /tmp/
     sudo mv /tmp/k9s /usr/local/bin/k9s
