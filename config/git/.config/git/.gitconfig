@@ -1,7 +1,27 @@
 [alias]
-    st = status
+    st = status -sb
     ci = commit
     br = branch
     co = checkout
+    undo = reset --soft HEAD~1
+    # Remove untracked files and directories
+    wipe = clean -xdf
+    # Delete local branches that have been removed from remote
+    gone = !git branch -vv | awk '/: gone]/{print $1}' | xargs -r git branch -D
 [init]
 	defaultBranch = main
+[push]
+    autoSetupRemote = true
+[pull]
+    rebase = true
+[fetch]
+    prune = true
+[push]
+    default = simple
+[rebase]
+    autoStash = true
+[diff]
+    algorithm = histogram
+    colorMoved = default
+[core]
+    pager = delta

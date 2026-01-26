@@ -6,3 +6,7 @@ _zcompdump="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompdump"
 mkdir -p -- "${_zcompdump:h}" 2>/dev/null || true
 
 compinit -d "$_zcompdump"
+
+if command -v kubectl >/dev/null; then
+  compdef k=kubectl
+fi

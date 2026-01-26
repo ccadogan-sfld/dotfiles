@@ -7,6 +7,15 @@ export VISUAL="$EDITOR"
 # Add a personal bin directory early on the PATH.
 export PATH="$HOME/bin:$PATH"
 
+# Load user-specific secrets if present (not tracked in git).
+_dotfiles_env_local="$HOME/.env.local"
+if [ -f "$_dotfiles_env_local" ]; then
+  set -a
+  . "$_dotfiles_env_local"
+  set +a
+fi
+unset _dotfiles_env_local
+
 # Ensure starship uses the config installed by these dotfiles.
 if [ -z "${STARSHIP_CONFIG:-}" ]; then
   export STARSHIP_CONFIG="$HOME/.config/starship.toml"

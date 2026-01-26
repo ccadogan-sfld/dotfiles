@@ -12,3 +12,8 @@ elif command -v brew >/dev/null; then
   fi
 fi
 
+if command -v kubectl >/dev/null; then
+  if declare -F __start_kubectl >/dev/null; then
+    complete -o default -F __start_kubectl k
+  fi
+fi

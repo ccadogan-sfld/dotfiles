@@ -22,6 +22,38 @@ install_nvim() {
     rm -rf /tmp/${TAR_BALL%.tar.gz} /tmp/$TAR_BALL
 }
 
+install_k9s() {
+    command -v k9s >/dev/null && return
+    command -v kubectl >/dev/null || return
+    
+    if [[ "$OS_TYPE" == "Darwin" ]]; then
+        K9S_OS="Darwin"
+    elif [[ "$OS_TYPE" == "Linux" ]]; then
+        K9S_OS="Linux"
+    else
+        echo "Unsupported OS for k9s installation"
+        return
+    fi
+    
+    K9S_ARCH="$ARCH"
+    if [[ "$ARCH" == "x86_64" ]]; then
+        K9S_ARCH="x86_64"
+    elif [[ "$ARCH" == "arm64" || "$ARCH" == "aarch64" ]]; then
+        K9S_ARCH="arm64"
+    else
+        echo "Unsupported architecture for k9s installation"
+        return
+    fi
+    
+    K9S_VERSION=$(curl -s https://api.github.com/repos/derailed/k9s/releases/latest | grep tag_name | cut -d '"' -f 4)
+    TAR_BALL="k9s_${K9S_OS}_${K9S_ARCH}.tar.gz"
+    
+    curl -Lo /tmp/$TAR_BALL
+    tar -xzf /tmp/$TAR_BALL -C /tmp/
+    sudo mv /tmp/k9s /usr/local/bin/k9s
+    rm -f /tmp/$TAR_BALL
+}
+
 install_starship() {
   command -v starship >/dev/null && return
   curl -fsSL https://starship.rs/install.sh | sh -s -- -y
@@ -35,3 +67,4 @@ install_uv() {
 install_nvim
 install_starship
 install_uv
+install_k9s
