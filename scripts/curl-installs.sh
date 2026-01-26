@@ -36,7 +36,7 @@ install_k9s() {
     fi
     
     if [[ "$ARCH" == "x86_64" ]]; then
-        K9S_ARCH="x86_64"
+        K9S_ARCH="amd64"
     elif [[ "$ARCH" == "arm64" || "$ARCH" == "aarch64" ]]; then
         K9S_ARCH="arm64"
     else
