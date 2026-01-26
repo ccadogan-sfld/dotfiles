@@ -48,7 +48,6 @@ install_k9s() {
     TAR_BALL="k9s_${K9S_OS}_${K9S_ARCH}.tar.gz"
     curl -Lo /tmp/$TAR_BALL https://github.com/derailed/k9s/releases/download/latest/$TAR_BALL
     
-    curl -Lo /tmp/$TAR_BALL
     tar -xzf /tmp/$TAR_BALL -C /tmp/
     sudo mv /tmp/k9s /usr/local/bin/k9s
     rm -rf /tmp/${TAR_BALL%.tar.gz} /tmp/$TAR_BALL
