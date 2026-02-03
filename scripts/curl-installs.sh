@@ -95,7 +95,7 @@ install_go() {
     TAR_BALL="go${GO_VERSION}.${GO_OS}-${GO_ARCH}.tar.gz"
 
     curl -Lo /tmp/$TAR_BALL https://golang.org/dl/$TAR_BALL
-    sudo tar -C /usr/local/bin -xzf /tmp/$TAR_BALL
+    sudo tar -C /usr/local -xzf /tmp/$TAR_BALL
     rm -rf /tmp/$TAR_BALL
 }
 
