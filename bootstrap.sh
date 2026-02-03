@@ -48,6 +48,7 @@ stow_all
 
 ./scripts/bootstrap/shell-config.sh --shell auto
 
+bash ./scripts/set-env-vars.sh
 
 bash ./scripts/curl-installs.sh
 bash ./scripts/install-fonts.sh
