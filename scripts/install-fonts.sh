@@ -19,35 +19,60 @@ font_already_installed() {
 }
 
 install_jetbrains_mono_nerd_font() {
-  font_already_installed && return
+  echo "Checking for JetBrains Mono Nerd Font..."
+
+  if font_already_installed; then
+    echo "JetBrains Mono Nerd Font is already installed."
+    return 0
+  fi
 
   if command -v brew >/dev/null; then
-    brew list --cask font-jetbrains-mono-nerd-font >/dev/null 2>&1 && return
-    brew install --cask font-jetbrains-mono-nerd-font && return
+    if brew list --cask font-jetbrains-mono-nerd-font >/dev/null 2>&1; then
+      echo "JetBrains Mono Nerd Font is already installed via Homebrew."
+      return 0
+    fi
+    echo "Installing JetBrains Mono Nerd Font via Homebrew..."
+    brew install --cask font-jetbrains-mono-nerd-font && {
+      echo "Font installed successfully via Homebrew."
+      return 0
+    }
   fi
 
   if command -v apt-get >/dev/null && command -v apt-cache >/dev/null; then
+    echo "Attempting to install via apt..."
     local pkg
     for pkg in \
       fonts-jetbrains-mono-nerd-font \
       fonts-nerd-fonts-jetbrainsmono \
       fonts-nerd-fonts-jetbrains-mono; do
       if apt-cache show "$pkg" >/dev/null 2>&1; then
-        sudo apt-get install -y "$pkg" && return
+        echo "Found package: $pkg"
+        sudo apt-get install -y "$pkg" && {
+          echo "Font installed successfully via apt."
+          return 0
+        }
       fi
     done
   fi
 
   command -v git >/dev/null || { echo "git is required to install Nerd Fonts" >&2; return 1; }
 
+  echo "Installing from GitHub repository (this may take a moment)..."
   local repo="https://github.com/ryanoasis/nerd-fonts.git"
   local tmpdir
   tmpdir="$(mktemp -d 2>/dev/null || mktemp -d -t nerd-fonts)"
 
-  { git clone --depth 1 "$repo" "$tmpdir/nerd-fonts" &&
-    (cd "$tmpdir/nerd-fonts" && ./install.sh JetBrainsMono); }
+  { git clone --depth 1 "$repo" "$tmpdir/nerd-fonts" >/dev/null 2>&1 &&
+    (cd "$tmpdir/nerd-fonts" && ./install.sh JetBrainsMono >/dev/null 2>&1); }
   local status=$?
   rm -rf "$tmpdir"
+
+  if [ "$status" -eq 0 ]; then
+    echo "Font installed successfully from GitHub."
+  else
+    echo "Failed to install font from GitHub." >&2
+  fi
+
   return "$status"
 }
 
