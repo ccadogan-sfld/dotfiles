@@ -20,3 +20,7 @@ unset _dotfiles_env_local
 if [ -z "${STARSHIP_CONFIG:-}" ]; then
   export STARSHIP_CONFIG="$HOME/.config/starship.toml"
 fi
+
+export GOPATH="$HOME/.go"
+
+export PATH="$GOPATH/bin:$PATH"
