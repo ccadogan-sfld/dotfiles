@@ -6,4 +6,5 @@ lazygit
 ripgrep
 stow
 tmux
-tree-sitter-cli
+gcc
+clang-devel

@@ -64,11 +64,36 @@ install_k9s() {
     echo "k9s installation complete"
 }
 
+install_rust() {
+  echo "Installing rust and cargo..."
+  command -v cargo >/dev/null && { echo "cargo already installed"; return; }
+  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+  export PATH="$HOME/.cargo/bin:$PATH"
+  echo "rust and cargo installation complete"
+}
+
 install_starship() {
   echo "Installing starship..."
   command -v starship >/dev/null && { echo "starship already installed"; return; }
   curl -fsSL https://starship.rs/install.sh | sh -s -- -y &>/dev/null
   echo "starship installation complete"
+}
+
+install_tree_sitter_cli() {
+  echo "Installing tree-sitter-cli..."
+  command -v tree-sitter >/dev/null && { echo "tree-sitter-cli already installed"; return; }
+
+  # Ensure cargo is available
+  if ! command -v cargo >/dev/null; then
+    echo "cargo not found, installing rust first..."
+    install_rust
+  fi
+
+  # Add cargo to PATH for current shell
+  export PATH="$HOME/.cargo/bin:$PATH"
+
+  cargo install tree-sitter-cli
+  echo "tree-sitter-cli installation complete"
 }
 
 install_uv() {
@@ -141,8 +166,10 @@ install_terraform() {
 }
 
 install_nvim
+install_rust
 install_starship
 install_uv
 install_k9s
 install_go
 install_terraform
+install_tree_sitter_cli

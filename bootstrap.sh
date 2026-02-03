@@ -27,18 +27,12 @@ elif command -v yum >/dev/null; then
   sudo yum install -y yum-plugin-copr
   # Enable COPR for packages like lazygit.
   sudo yum copr enable -y atim/lazygit
-  grep -v '^tree-sitter-cli$' apt.txt | xargs sudo yum install -y
-  # tree-sitter-cli is published via npm for yum/dnf.
-  sudo yum install -y nodejs npm
-  sudo npm install -g tree-sitter-cli
+  xargs sudo yum install -y < apt.txt
 elif command -v dnf >/dev/null; then
   sudo dnf install -y dnf-plugins-core
   # Enable COPR for packages like lazygit.
   sudo dnf copr enable -y atim/lazygit
-  grep -v '^tree-sitter-cli$' apt.txt | xargs sudo dnf install -y
-  # tree-sitter-cli is published via npm for yum/dnf.
-  sudo dnf install -y nodejs npm
-  sudo npm install -g tree-sitter-cli
+  xargs sudo dnf install -y < apt.txt
 else
   echo "Unsupported OS"
   exit 1
