@@ -12,7 +12,8 @@ ARCH=$(uname -m)
 OS_TYPE=$(uname)
 
 install_nvim() {
-    command -v nvim >/dev/null && return
+    echo "Installing nvim..."
+    command -v nvim >/dev/null && { echo "nvim already installed"; return; }
 
     if [[ "$OS_TYPE" == "Darwin" ]]; then
         TAR_BALL="nvim-macos-$ARCH.tar.gz"
@@ -24,14 +25,16 @@ install_nvim() {
     fi
 
     curl -sLo /tmp/$TAR_BALL https://github.com/neovim/neovim/releases/download/stable/$TAR_BALL
-    tar -xzf /tmp/$TAR_BALL -C /tmp/
+    tar -xzf /tmp/$TAR_BALL -C /tmp/ 2>/dev/null
     sudo cp -rf /tmp/${TAR_BALL%.tar.gz}/* /usr/local/
     rm -rf /tmp/${TAR_BALL%.tar.gz} /tmp/$TAR_BALL
+    echo "nvim installation complete"
 }
 
 install_k9s() {
-    command -v k9s >/dev/null && return
-    command -v kubectl >/dev/null || return
+    echo "Installing k9s..."
+    command -v k9s >/dev/null && { echo "k9s already installed"; return; }
+    command -v kubectl >/dev/null || { echo "kubectl not found, skipping k9s"; return; }
 
     if [[ "$OS_TYPE" == "Darwin" ]]; then
         K9S_OS="Darwin"
@@ -55,23 +58,29 @@ install_k9s() {
 
     curl -sLo /tmp/$TAR_BALL https://github.com/derailed/k9s/releases/download/$K9S_VERSION/$TAR_BALL
 
-    tar -xzf /tmp/$TAR_BALL -C /tmp/
+    tar -xzf /tmp/$TAR_BALL -C /tmp/ 2>/dev/null
     sudo mv /tmp/k9s /usr/local/bin/k9s
     rm -rf /tmp/${TAR_BALL%.tar.gz} /tmp/$TAR_BALL
+    echo "k9s installation complete"
 }
 
 install_starship() {
-  command -v starship >/dev/null && return
+  echo "Installing starship..."
+  command -v starship >/dev/null && { echo "starship already installed"; return; }
   curl -fsSL https://starship.rs/install.sh | sh -s -- -y &>/dev/null
+  echo "starship installation complete"
 }
 
 install_uv() {
-  command -v uv >/dev/null && return
+  echo "Installing uv..."
+  command -v uv >/dev/null && { echo "uv already installed"; return; }
   curl -LsSf https://astral.sh/uv/install.sh | sh
+  echo "uv installation complete"
 }
 
 install_go() {
-    command -v go >/dev/null && return
+    echo "Installing go..."
+    command -v go >/dev/null && { echo "go already installed"; return; }
 
     if [[ "$OS_TYPE" == "Darwin" ]]; then
         GO_OS="darwin"
@@ -95,12 +104,14 @@ install_go() {
     TAR_BALL="go${GO_VERSION}.${GO_OS}-${GO_ARCH}.tar.gz"
 
     curl -sLo /tmp/$TAR_BALL https://golang.org/dl/$TAR_BALL
-    sudo tar -C /usr/local -xzf /tmp/$TAR_BALL
+    sudo tar -C /usr/local -xzf /tmp/$TAR_BALL 2>/dev/null
     rm -rf /tmp/$TAR_BALL
+    echo "go installation complete"
 }
 
 install_terraform() {
-    command -v terraform >/dev/null && return
+    echo "Installing terraform..."
+    command -v terraform >/dev/null && { echo "terraform already installed"; return; }
 
     if [[ "$OS_TYPE" == "Darwin" ]]; then
         TERRAFORM_OS="darwin"
@@ -123,9 +134,10 @@ install_terraform() {
     ZIP_BALL="terraform_${TERRAFORM_VERSION}_${TERRAFORM_OS}_${TERRAFORM_ARCH}.zip"
 
     curl -sLo /tmp/$ZIP_BALL https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/$ZIP_BALL
-    unzip /tmp/$ZIP_BALL -d /tmp/
+    unzip -q /tmp/$ZIP_BALL -d /tmp/
     sudo mv /tmp/terraform /usr/local/bin/terraform
     rm -rf /tmp/$ZIP_BALL
+    echo "terraform installation complete"
 }
 
 install_nvim
