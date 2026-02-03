@@ -23,7 +23,7 @@ install_nvim() {
         return
     fi
 
-    curl -Lo /tmp/$TAR_BALL https://github.com/neovim/neovim/releases/download/stable/$TAR_BALL
+    curl -sLo /tmp/$TAR_BALL https://github.com/neovim/neovim/releases/download/stable/$TAR_BALL
     tar -xzf /tmp/$TAR_BALL -C /tmp/
     sudo cp -rf /tmp/${TAR_BALL%.tar.gz}/* /usr/local/
     rm -rf /tmp/${TAR_BALL%.tar.gz} /tmp/$TAR_BALL
@@ -53,7 +53,7 @@ install_k9s() {
 
     TAR_BALL="k9s_${K9S_OS}_${K9S_ARCH}.tar.gz"
 
-    curl -Lo /tmp/$TAR_BALL https://github.com/derailed/k9s/releases/download/$K9S_VERSION/$TAR_BALL
+    curl -sLo /tmp/$TAR_BALL https://github.com/derailed/k9s/releases/download/$K9S_VERSION/$TAR_BALL
 
     tar -xzf /tmp/$TAR_BALL -C /tmp/
     sudo mv /tmp/k9s /usr/local/bin/k9s
@@ -62,7 +62,7 @@ install_k9s() {
 
 install_starship() {
   command -v starship >/dev/null && return
-  curl -fsSL https://starship.rs/install.sh | sh -s -- -y
+  curl -fsSL https://starship.rs/install.sh | sh -s -- -y &>/dev/null
 }
 
 install_uv() {
@@ -94,7 +94,7 @@ install_go() {
 
     TAR_BALL="go${GO_VERSION}.${GO_OS}-${GO_ARCH}.tar.gz"
 
-    curl -Lo /tmp/$TAR_BALL https://golang.org/dl/$TAR_BALL
+    curl -sLo /tmp/$TAR_BALL https://golang.org/dl/$TAR_BALL
     sudo tar -C /usr/local -xzf /tmp/$TAR_BALL
     rm -rf /tmp/$TAR_BALL
 }
@@ -122,7 +122,7 @@ install_terraform() {
 
     ZIP_BALL="terraform_${TERRAFORM_VERSION}_${TERRAFORM_OS}_${TERRAFORM_ARCH}.zip"
 
-    curl -Lo /tmp/$ZIP_BALL https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/$ZIP_BALL
+    curl -sLo /tmp/$ZIP_BALL https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/$ZIP_BALL
     unzip /tmp/$ZIP_BALL -d /tmp/
     sudo mv /tmp/terraform /usr/local/bin/terraform
     rm -rf /tmp/$ZIP_BALL

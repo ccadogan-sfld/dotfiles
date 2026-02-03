@@ -13,6 +13,8 @@ fi
 
 echo "Bootstrapping dotfiles..."
 
+bash ./scripts/set-env-vars.sh
+
 source "$(dirname "$0")/scripts/bootstrap/lib.sh"
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -47,8 +49,6 @@ bash ./scripts/bootstrap/lazyvim-requirements.sh
 stow_all
 
 ./scripts/bootstrap/shell-config.sh --shell auto
-
-bash ./scripts/set-env-vars.sh
 
 bash ./scripts/curl-installs.sh
 bash ./scripts/install-fonts.sh
