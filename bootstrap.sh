@@ -18,27 +18,19 @@ bash ./scripts/set-env-vars.sh
 source "$(dirname "$0")/scripts/bootstrap/lib.sh"
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-  command -v brew >/dev/null || \
+  command -v brew >/dev/null ||
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   brew bundle
 elif command -v apt >/dev/null; then
   xargs -a apt.txt sudo apt install -y
 elif command -v yum >/dev/null; then
-  sudo yum install -y yum-plugin-copr
-  # Enable COPR for packages like lazygit.
-  sudo yum copr enable -y atim/lazygit
-  xargs sudo yum install -y < apt.txt
+  xargs sudo yum install -y <apt.txt
 elif command -v dnf >/dev/null; then
-  sudo dnf install -y dnf-plugins-core
-  # Enable COPR for packages like lazygit.
-  sudo dnf copr enable -y atim/lazygit
-  xargs sudo dnf install -y < apt.txt
+  xargs sudo dnf install -y <apt.txt
 else
   echo "Unsupported OS"
   exit 1
 fi
-
-bash ./scripts/bootstrap/lazyvim-requirements.sh
 
 stow_all
 
@@ -48,5 +40,7 @@ bash ./scripts/curl-installs.sh
 bash ./scripts/install-fonts.sh
 
 bash ./scripts/bootstrap/git-config.sh
+
+bash ./scripts/bootstrap/lazyvim-requirements.sh
 
 echo "Bootstrap complete! Restart your terminal to apply changes."

@@ -6,6 +6,7 @@ set -e
 K9S_VERSION=v0.50.18
 GO_VERSION=1.25.6
 TERRAFORM_VERSION=1.14.4
+LAZYGIT_VERSION=0.58.1
 
 
 ARCH=$(uname -m)
@@ -165,11 +166,36 @@ install_terraform() {
     echo "terraform installation complete"
 }
 
-install_nvim
+install_lazygit() {
+    echo "Installing lazygit..."
+    # command -v lazygit >/dev/null && { echo "lazygit already installed"; return; }
+
+    if [[ "$OS_TYPE" == "Darwin" ]]; then
+        LAZYGIT_OS="darwin"
+    elif [[ "$OS_TYPE" == "Linux" ]]; then
+        LAZYGIT_OS="linux"
+    else
+        echo "Unsupported OS for lazygit installation"
+        return
+    fi
+
+    TAR_BALL="lazygit_${LAZYGIT_OS}_${ARCH}.tar.gz"
+
+    curl -sLo /tmp/$TAR_BALL https://github.com/jesseduffield/lazygit/releases/download/v$LAZYGIT_VERSION/$TAR_BALL
+    tar -xzf /tmp/$TAR_BALL -C /tmp/ 2>/dev/null
+    sudo mv /tmp/lazygit /usr/local/bin/lazygit
+    rm -rf /tmp/${TAR_BALL%.tar.gz} /tmp/$TAR_BALL
+    echo "lazygit installation complete"
+}
+
 install_rust
 install_starship
 install_uv
 install_k9s
 install_go
 install_terraform
+
+# Neovim and tools
+install_nvim
 install_tree_sitter_cli
+install_lazygit
