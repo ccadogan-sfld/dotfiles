@@ -42,13 +42,11 @@ else
   exit 1
 fi
 
-bash ./scripts/bootstrap/lazyvim-requirements.sh
-
 stow_all
 
 ./scripts/bootstrap/shell-config.sh --shell auto
 
-
+bash ./scripts/bootstrap/lazyvim-requirements.sh
 bash ./scripts/curl-installs.sh
 bash ./scripts/install-fonts.sh
 
