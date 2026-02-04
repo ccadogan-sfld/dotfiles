@@ -168,7 +168,7 @@ install_terraform() {
 
 install_lazygit() {
     echo "Installing lazygit..."
-    # command -v lazygit >/dev/null && { echo "lazygit already installed"; return; }
+    command -v lazygit >/dev/null && { echo "lazygit already installed"; return; }
 
     if [[ "$OS_TYPE" == "Darwin" ]]; then
         LAZYGIT_OS="darwin"
@@ -179,7 +179,7 @@ install_lazygit() {
         return
     fi
 
-    TAR_BALL="lazygit_${LAZYGIT_OS}_${ARCH}.tar.gz"
+    TAR_BALL="lazygit_${LAZYGIT_VERSION}_${LAZYGIT_OS}_${ARCH}.tar.gz"
 
     curl -sLo /tmp/$TAR_BALL https://github.com/jesseduffield/lazygit/releases/download/v$LAZYGIT_VERSION/$TAR_BALL
     tar -xzf /tmp/$TAR_BALL -C /tmp/ 2>/dev/null
@@ -189,10 +189,11 @@ install_lazygit() {
 }
 
 install_rust
+install_go
+
 install_starship
 install_uv
 install_k9s
-install_go
 install_terraform
 
 # Neovim and tools
