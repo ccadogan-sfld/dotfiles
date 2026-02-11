@@ -188,6 +188,15 @@ install_lazygit() {
     echo "lazygit installation complete"
 }
 
+install_kubectx(){
+    echo "Installing kubectx..."
+    command -v kubectx >/dev/null && { echo "kubectx already installed"; return; }
+
+    sudo git clone https://github.com/ahmetb/kubectx /opt/kubectx
+    sudo ln -s /opt/kubectx/kubectx /usr/local/bin/kubectx
+    sudo ln -s /opt/kubectx/kubens /usr/local/bin/kubens
+}
+
 install_rust
 install_go
 
@@ -195,6 +204,7 @@ install_starship
 install_uv
 install_k9s
 install_terraform
+install_kubectx
 
 # Neovim and tools
 install_nvim
