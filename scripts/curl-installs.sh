@@ -197,6 +197,16 @@ install_kubectx(){
     sudo ln -s /opt/kubectx/kubens /usr/local/bin/kubens
 }
 
+link_claude_mcp(){
+
+    # if ~/.config/claude/mcp.json and ~/.claude exist, symlink to ~/.claude/mcp.json
+    if [ -f ~/.config/claude/mcp.json ] && [ -d ~/.claude ]; then
+        echo "Linking claude code mcp.json"
+        ln -sf ~/.config/claude/mcp.json ~/.claude/mcp.json
+        echo "Linked ~/.config/claude/mcp.json to ~/.claude/mcp.json"
+    fi
+}
+
 install_rust
 install_go
 
@@ -210,3 +220,5 @@ install_kubectx
 install_nvim
 install_tree_sitter_cli
 install_lazygit
+
+link_claude_mcp
